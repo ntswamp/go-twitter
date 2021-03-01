@@ -75,6 +75,7 @@ type MediaProcessingError struct {
 type MediaUploadResult struct {
 	MediaID          int64                `json:"media_id"`
 	MediaIDString    string               `json:"media_id_string"`
+	MediaKey         string               `json:"media_key"`
 	Size             int                  `json:"size"`
 	ExpiresAfterSecs int                  `json:"expires_after_secs"`
 	Video            *MediaVideoInfo      `json:"video"`
