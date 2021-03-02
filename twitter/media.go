@@ -3,7 +3,6 @@ package twitter
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/dghubble/sling"
@@ -106,9 +105,10 @@ func (m *MediaService) Upload(media []byte, mediaType string) (*MediaUploadResul
 	}
 
 	params := &mediaInitParams{
-		Command:       "INIT",
-		TotalBytes:    len(media),
-		MediaType:     mediaType,
+		Command:    "INIT",
+		TotalBytes: len(media),
+		MediaType:  mediaType,
+		//only support image uploading currently. if you need more types simply derive MediaCategory from mediaType.
 		MediaCategory: "TWEET_IMAGE",
 	}
 	res := new(mediaInitResult)
@@ -121,7 +121,6 @@ func (m *MediaService) Upload(media []byte, mediaType string) (*MediaUploadResul
 	}
 
 	mediaID := res.MediaID
-	log.Println(res.MediaKey)
 
 	segments := int(len(media) / chunkSize)
 	for segment := 0; segment <= segments; segment++ {
