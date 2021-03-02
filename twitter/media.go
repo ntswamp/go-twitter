@@ -3,6 +3,7 @@ package twitter
 import (
 	"encoding/base64"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/dghubble/sling"
@@ -30,14 +31,16 @@ func newMediaService(sling *sling.Sling) *MediaService {
 type mediaInitResult struct {
 	MediaID          int64  `json:"media_id"`
 	MediaIDString    string `json:"media_id_string"`
+	MediaKey         string `json:"media_key"`
 	Size             int    `json:"size"`
 	ExpiresAfterSecs int    `json:"expires_after_secs"`
 }
 
 type mediaInitParams struct {
-	Command    string `url:"command"`
-	TotalBytes int    `url:"total_bytes"`
-	MediaType  string `url:"media_type"`
+	Command       string `url:"command"`
+	TotalBytes    int    `url:"total_bytes"`
+	MediaType     string `url:"media_type"`
+	MediaCategory string `url:"media_category"`
 }
 
 type mediaAppendParams struct {
@@ -103,9 +106,10 @@ func (m *MediaService) Upload(media []byte, mediaType string) (*MediaUploadResul
 	}
 
 	params := &mediaInitParams{
-		Command:    "INIT",
-		TotalBytes: len(media),
-		MediaType:  mediaType,
+		Command:       "INIT",
+		TotalBytes:    len(media),
+		MediaType:     mediaType,
+		MediaCategory: "TWEET_IMAGE",
 	}
 	res := new(mediaInitResult)
 	apiError := new(APIError)
@@ -117,6 +121,7 @@ func (m *MediaService) Upload(media []byte, mediaType string) (*MediaUploadResul
 	}
 
 	mediaID := res.MediaID
+	log.Println(res.MediaKey)
 
 	segments := int(len(media) / chunkSize)
 	for segment := 0; segment <= segments; segment++ {
